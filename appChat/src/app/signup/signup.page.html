@@ -9,28 +9,28 @@
     <div class="wrapper">
       <div class="form signup">
         <header>Realtime Chat App</header>
-        <form #form="ngForm" (ngSubmit)="signup(form)" id="myForm">
+        <form #form="ngForm" (ngSubmit)="signup(form)" >
           <div class="errorTxt">Ceci Est un message d'erreur</div>
           <div class="name-details">
             <div class="field input">
               <label>Nom</label>
-              <input type="text" name="nom" placeholder="Nom de Famille">
+              <input type="text" name="nom" placeholder="Nom de Famille" ngModel required>
             </div>
             <div class="field input">
               <label>Prenom</label>
-              <input type="text" name="prenom" placeholder="Prenom">
+              <input type="text" name="prenom" placeholder="Prenom" ngModel required>
             </div>
           </div>
           <div class="field input">
             <label>Email</label>
-            <input type="text" name="email" placeholder="Email">
+            <input type="text" name="email" placeholder="Email" ngModel required>
           </div>
           <div class="field input">
             <label>Mot de Passe</label>
-            <input type="password" name="password" placeholder="enter Password">
+            <input type="password" name="password" placeholder="enter Password" ngModel required>
           </div>
           <div class="field button">
-            <input type="submit" value="Go !">
+            <input type="submit" [disabled]="form.invalid" value="Go !">
           </div>
         </form>
         <div class="link">Already sign Up ?<a href="#">Log in !</a></div>
