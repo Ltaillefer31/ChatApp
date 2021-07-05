@@ -1,0 +1,7 @@
+{
+  "name": "appChat",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

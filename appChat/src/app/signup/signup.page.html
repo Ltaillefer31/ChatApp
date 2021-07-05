@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>signup</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="body">
+    <div class="wrapper">
+      <div class="form signup">
+        <header>Realtime Chat App</header>
+        <form #form="ngForm" (ngSubmit)="signup(form)" id="myForm">
+          <div class="errorTxt">Ceci Est un message d'erreur</div>
+          <div class="name-details">
+            <div class="field input">
+              <label>Nom</label>
+              <input type="text" name="nom" placeholder="Nom de Famille">
+            </div>
+            <div class="field input">
+              <label>Prenom</label>
+              <input type="text" name="prenom" placeholder="Prenom">
+            </div>
+          </div>
+          <div class="field input">
+            <label>Email</label>
+            <input type="text" name="email" placeholder="Email">
+          </div>
+          <div class="field input">
+            <label>Mot de Passe</label>
+            <input type="password" name="password" placeholder="enter Password">
+          </div>
+          <div class="field button">
+            <input type="submit" value="Go !">
+          </div>
+        </form>
+        <div class="link">Already sign Up ?<a href="#">Log in !</a></div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
