@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -8,7 +9,7 @@ import { UserService } from '../services/user.service';
 })
 export class LoginPage implements OnInit {
 
-  constructor(private userService: UserService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
   }
@@ -19,10 +20,11 @@ export class LoginPage implements OnInit {
     formData.append('email', form.value['email']);
     formData.append('password', form.value['password']);
 
-    this.userService.login(formData)
+    this.authService.login(formData)
     .subscribe(
       (data) =>{
         console.log(data);
+        this.router.navigate(['/home']);
       },
       (error) => {
         console.log("#ERROR Login " + JSON.stringify(error));

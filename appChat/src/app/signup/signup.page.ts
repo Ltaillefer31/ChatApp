@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -10,7 +11,7 @@ import { UserService } from '../services/user.service';
 export class SignupPage implements OnInit {
 
   
-  constructor(private userService: UserService) { }
+  constructor(private authService: AuthService, private router:Router) { }
 
   ngOnInit() {
   }
@@ -25,10 +26,11 @@ export class SignupPage implements OnInit {
     formData.append('email', form.value['email']);
     formData.append('password', form.value['password']);
     
-    this.userService.signup(formData)
+    this.authService.signup(formData)
     .subscribe(
       (data) => {
         console.log(data);
+        this.router.navigate(['/login']);
       },
       (err) => {
         console.log("##ERROR signup" + JSON.stringify(err));
