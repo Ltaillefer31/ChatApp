@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +10,9 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginPage implements OnInit {
 
-  constructor(private authService: AuthService, private router: Router) { }
+  invalidLogin = false;
+
+  constructor(private authService: AuthService, private router: Router, private userService: UserService) { }
 
   ngOnInit() {
   }
@@ -24,7 +27,12 @@ export class LoginPage implements OnInit {
     .subscribe(
       (data) =>{
         console.log(data);
-        this.router.navigate(['/home']);
+        if(data["isUserExist"]){
+          this.userService.setUser(data["userData"]);
+          this.router.navigate(['/home']);
+        }else{
+          this.invalidLogin = true;
+        }        
       },
       (error) => {
         console.log("#ERROR Login " + JSON.stringify(error));
