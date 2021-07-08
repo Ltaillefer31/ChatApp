@@ -11,13 +11,13 @@ export class AuthService{
     }
 
     login(form){
-        let urlApi = this.HOSTNAME.concat("UserRequest/login.php");
+    let urlApi = this.HOSTNAME.concat("AuthRequest/login.php");
         
         return this.httpClient.post(urlApi,form);
     }
 
     signup(form){
-        let urlApi = this.HOSTNAME.concat("UserRequest/addUser.php");
+        let urlApi = this.HOSTNAME.concat("AuthRequest/addUser.php");
         
         return this.httpClient.post(urlApi,form);
     }
