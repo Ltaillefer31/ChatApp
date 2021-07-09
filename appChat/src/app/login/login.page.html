@@ -7,7 +7,7 @@
         <header>Realtime Chat App</header>
         <form #form="ngForm" (ngSubmit)="login(form)" >
           <!-- Message d'erreur en cas de mauvaise combinaison  -->
-          <div class="errorTxt">Ceci Est un message d'erreur</div>
+          <div class="errorTxt" *ngIf="invalidLogin">Email ou Mot de passe incorrect</div>
           <!-- Toute les entrées -->
           <div class="field input">
             <label>Email</label>

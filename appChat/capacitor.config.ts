@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
       lauchnAutoHide:false,
     },
     LocalNotifications:{
-      smallIcon: 'ic_stat_icon_config_sample',
+      smallIcon: 'ic_stat_android',
       iconColor:'#FF0000',
     },
     PushNotifications:{
