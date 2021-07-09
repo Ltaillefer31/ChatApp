@@ -17,7 +17,7 @@ export class AuthService{
     }
 
     signup(form){
-        let urlApi = this.HOSTNAME.concat("AuthRequest/addUser.php");
+        let urlApi = this.HOSTNAME.concat("AuthRequest/signup.php");
         
         return this.httpClient.post(urlApi,form);
     }
