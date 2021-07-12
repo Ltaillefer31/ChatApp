@@ -21,7 +21,11 @@ export class UserService implements OnInit{
 
     setUser(info){
         this.user = new User(info["nom"], info["prenom"], info["id"]);
-    } 
+    }
+    
+    getUser(){
+        return this.user;
+    }
 
 
 }
