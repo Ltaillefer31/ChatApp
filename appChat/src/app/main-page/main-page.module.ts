@@ -8,6 +8,7 @@ import { MainPagePageRoutingModule } from './main-page-routing.module';
 
 import { MainPagePage } from './main-page.page';
 import { InfoUserModule } from '../info-user/info-user.module';
+import { FinderModule } from '../finder/finder.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { InfoUserModule } from '../info-user/info-user.module';
     FormsModule,
     IonicModule,
     MainPagePageRoutingModule,
-    InfoUserModule
+    InfoUserModule,
+    FinderModule
   ],
   declarations: [MainPagePage]
 })

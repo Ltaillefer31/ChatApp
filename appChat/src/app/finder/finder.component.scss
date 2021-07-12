@@ -1,0 +1,28 @@
+.container{
+    height:100%;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.find{
+    width:98%;
+    height:80%;
+    border-radius: 10px;
+    background-color: lightgray;
+    display:flex;
+}
+
+input {
+    background-color:lightgray;
+    border-width: 0;
+    width:100%;
+    height:100%;
+    border-radius: 10px;
+}
+
+#search-circle-outline{
+    background-color:lightgray;
+    border-radius: 10px;
+}
