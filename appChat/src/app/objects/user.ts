@@ -5,6 +5,7 @@ export class User {
     prenom:string;
     id:string;
     status:string;
+    messages:string[] = new Array<string>();
 
     // private listFriend:User = new Array();
 
@@ -30,5 +31,13 @@ export class User {
 
     getStatus(){
         return this.status;
+    }
+
+    getMessageByString(string){
+
+    }
+
+    getMessage(){
+        return this.messages;
     }
 }

@@ -9,6 +9,7 @@ import { MainPagePageRoutingModule } from './main-page-routing.module';
 import { MainPagePage } from './main-page.page';
 import { InfoUserModule } from '../info-user/info-user.module';
 import { FinderModule } from '../finder/finder.module';
+import { ListContactModule } from '../list-contact/list-contact.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { FinderModule } from '../finder/finder.module';
     IonicModule,
     MainPagePageRoutingModule,
     InfoUserModule,
-    FinderModule
+    FinderModule,
+    ListContactModule    
   ],
   declarations: [MainPagePage]
 })

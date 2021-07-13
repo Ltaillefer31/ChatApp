@@ -1,0 +1,27 @@
+<div class="container" (click)="showDetails()">
+  <div class="imgUser">
+    <!-- Mettre Image ami -->
+    <img  class="profil_picture"
+          src="/assets/image/profil.jpg" (error)="updateUrl($event)"
+          alt="c'est moi">
+  </div>
+  <div class="infoUser">
+    <div class="nameUser">
+      <p>{{nom}} {{prenom}}</p>
+    </div>
+    <div class="status">
+      <div class="status-color">
+        <div class="status-color-field"></div>
+      </div>
+      <div class="status-info">
+        <div class="status-info-field">
+          <p>En ligne</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lastMessage">
+    <p>Dernier message</p>
+  </div>
+</div>

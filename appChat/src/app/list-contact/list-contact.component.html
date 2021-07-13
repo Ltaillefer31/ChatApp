@@ -1,0 +1,8 @@
+<div class="container">
+  <ul class="list-contact">
+    <app-contact *ngFor="let contact of listFriends"
+                  [nom]="contact.nom"
+                  [prenom]="contact.prenom"
+                  [id]="contact.id"></app-contact>
+  </ul>
+</div>

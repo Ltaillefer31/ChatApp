@@ -1,0 +1,82 @@
+p{
+    margin:0;
+}
+
+.container{
+    margin-top:10px;
+    margin-left:3px;
+    width: 100%;
+    height: 80px;
+    display:grid;
+    grid-template-columns: 80px 1fr;
+    grid-template-rows: 50% 50%;
+}
+
+.imgUser{
+    grid-column-start:1 ;
+    grid-row:1 / 3;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.lastMessage{
+    grid-column-start: 2;
+    grid-row-start: 2;
+    display:flex;
+    align-items:center;
+}
+
+.infoUser{
+    grid-column-start:2;
+    grid-row-start: 1;
+    display:grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows:100%;
+}
+
+.nameUser{
+    grid-row-start: 1;
+    grid-column-start:1;
+    display:flex;
+    align-items: center;
+}
+
+.status{
+    grid-column-start:2;
+    grid-row-start: 1;
+    display:grid;
+    grid-template-columns:50px 1fr;
+    grid-template-rows: 100%;
+}
+
+.status-color{
+    grid-column-start:1;
+    grid-row-start: 1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.status-info{
+    grid-column-start:2;
+    grid-row-start: 1;
+    display:flex;
+    align-items:center;
+}
+
+.status-color-field{
+    width:10px;
+    height:10px;
+    border-radius: 50%;
+    background-color:green;
+}
+
+.profil_picture{
+    position: relative;
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    grid-column-start: 1;
+    grid-row:1 / 3;
+}
