@@ -1,3 +1,5 @@
+import { connectableObservableDescriptor } from "rxjs/internal/observable/ConnectableObservable";
+import { Message } from "./message";
 
 export class User {
 
@@ -5,9 +7,7 @@ export class User {
     prenom:string;
     id:string;
     status:string;
-    messages:string[] = new Array<string>();
-
-    // private listFriend:User = new Array();
+    messages:Message[] = new Array<Message>();
 
 
     constructor(nom,prenom,id){
@@ -33,11 +33,21 @@ export class User {
         return this.status;
     }
 
-    getMessageByString(string){
-
+    addMessage(text, idExp, idDes){
+        this.messages.push(new Message(text, idExp, idDes));
     }
 
     getMessage(){
         return this.messages;
+    }
+
+    getMessageById(id){
+        let arrReturnedMessage = new Array<Message>();
+        for(let message of this.messages){
+            if(message.getIdAddressee() == id){
+                arrReturnedMessage.push(message);
+            }
+        }
+        return arrReturnedMessage; 
     }
 }

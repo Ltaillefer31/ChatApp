@@ -1,0 +1,22 @@
+<div class="container"> 
+  <div class="spaceMessage">
+
+    <div class="message" *ngFor="let message of listMessages">
+      <div [ngClass]="{
+        'boxMessage' : true,
+        'user': message.getIdSender() != idFriend,
+        'contact': message.getIdSender() === idFriend}">
+        <p>{{message.getBody()}}</p>
+      </div>
+     
+    </div>     
+
+    
+  </div>
+  <div class="sendMessage">
+    <input type="text" placeholder="Message..." [(ngModel)]="message">
+    <button ion-button icon-only item-right (click)="sendMsg()" class="sendBtn">
+      <ion-icon name='send' icon-start></ion-icon>
+    </button>
+  </div>
+</div>

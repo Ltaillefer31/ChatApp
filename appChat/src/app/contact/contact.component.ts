@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { User } from '../objects/user';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-contact',
@@ -13,17 +14,16 @@ export class ContactComponent implements OnInit {
   @Input() id:number;
   friendUser:User;
 
-  constructor() {
+  constructor(private userService: UserService) {
     
   }
 
   ngOnInit() {
     this.friendUser = new User(this.nom, this.prenom, this.id);
-    console.log(this.friendUser);
   }
 
-  showDetails(){
-    console.log(this.friendUser);
+  connectToFriend(){
+    this.userService.setIdFriend(this.friendUser.getId());
   }
 
 }

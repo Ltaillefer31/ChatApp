@@ -10,6 +10,7 @@ import { MainPagePage } from './main-page.page';
 import { InfoUserModule } from '../info-user/info-user.module';
 import { FinderModule } from '../finder/finder.module';
 import { ListContactModule } from '../list-contact/list-contact.module';
+import { MessageSpaceModule } from '../message-space/message-space.module';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { ListContactModule } from '../list-contact/list-contact.module';
     MainPagePageRoutingModule,
     InfoUserModule,
     FinderModule,
-    ListContactModule    
+    ListContactModule,
+    MessageSpaceModule    
   ],
   declarations: [MainPagePage]
 })
