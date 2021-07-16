@@ -7,7 +7,7 @@ export class UserService implements OnInit{
 
     user:User;
     listFriends:User[] = new Array<User>();
-    idFriend:number = 4;
+    idFriend:number = null;
     idFriendSubject = new Subject<number>();
 
     constructor(){ 

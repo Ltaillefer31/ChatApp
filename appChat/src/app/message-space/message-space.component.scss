@@ -12,13 +12,17 @@
     display:block;
 }
 
-.boxMessage{
+.message{
     width:98%;
+    display:flex;
+}
+
+.boxMessage{
+    width:auto;
     border-radius:10px;
     border:0.5px solid #000;
     margin-top:5px;
     padding:10px;
-    display:flex;
 }
 
 p{
@@ -29,19 +33,13 @@ p{
 .user{
     background-color:lightblue;
     color:white;
-}
-
-.user p {
-    justify-self:flex-end;
+    margin-left:auto;
+    margin-right:0;
 }
 
 .contact{
     background-color: white;
     color: black;
-}
-
-.contact p {
-    justify-self:left;
 }
 
 .sendMessage{

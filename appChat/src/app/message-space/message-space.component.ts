@@ -36,12 +36,11 @@ export class MessageSpaceComponent implements OnInit {
   sendMsg(){
     this.userService.sendMsg(this.message, this.idFriend);
     this.getMessage();
+    this.message="";
   }
 
   getMessage(){
-    console.log("get the message from user/Friend");
     this.listMessages = this.userService.getMessage(this.userService.getFriendById(this.idFriend).getId());
-    console.log(this.userService.getMessage(this.userService.getFriendById(this.idFriend).getId()));
   }
 
 
