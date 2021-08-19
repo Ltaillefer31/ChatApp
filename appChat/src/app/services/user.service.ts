@@ -1,8 +1,8 @@
-import { OnInit } from "@angular/core";
-import { Subject } from "rxjs";
-import { Message } from "../objects/message";
+import { OnInit, Injectable } from "@angular/core";
+import { Subject, Subscription } from "rxjs";
 import { User } from "../objects/user";
 
+@Injectable()
 export class UserService implements OnInit{
 
     user:User;
@@ -10,22 +10,52 @@ export class UserService implements OnInit{
     idFriend:number = null;
     idFriendSubject = new Subject<number>();
 
-    constructor(){ 
-        this.user = new User("Louis", "Taillefer",2); 
-        this.listFriends.push(new User("Coddy", "Fisher", 4));
-        this.listFriends.push(new User("Annie", "Fisher", 5));
-        this.listFriends.push(new User("Steph", "Fisher", 6));
-        this.listFriends.push(new User("Joel", "Fisher", 7));
-        this.emitFriendSubject();
-        this.addMessage();
+    userSubject = new Subject<User>();
+
+
+    constructor(){     
+        
     }
 
-    ngOnInit() {
-        
+    ngOnInit() {        
     }
 
     emitFriendSubject(){
         this.idFriendSubject.next(this.idFriend);
+    }
+
+    emitUserSubject(){       
+        this.userSubject.next(this.user);
+        console.log("user Sended");
+    }
+
+    majUser(){
+        let userData = JSON.parse(sessionStorage.getItem("userData"));
+        
+        this.setUser(userData);
+        setTimeout( () => {
+            this.emitUserSubject();
+        }, 200);
+        
+        // this.emitFriendSubject();            
+    }
+
+    isUserConnected(){
+        let userConnected = true;
+        let expireToken = sessionStorage.getItem("expirationTokenCrsf");
+        let actualDate = Math.floor(Date.now() / 1000);
+        let userData = JSON.parse(sessionStorage.getItem("userData"));
+
+        if(typeof userData === "undefined"){
+            console.log("userData non existante");
+            userConnected = false;
+        }else if (Number(expireToken) < actualDate){
+            console.log("token CRSF expiré");
+            userConnected = false;   
+        }
+
+
+        return userConnected;
     }
 
     setUser(info){
@@ -97,8 +127,4 @@ export class UserService implements OnInit{
             }, 100);            
         }            
     }
-
-    
-
-
 }

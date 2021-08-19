@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 import { User } from '../objects/user';
 import { UserService } from '../services/user.service';
 
@@ -10,17 +11,49 @@ import { UserService } from '../services/user.service';
 export class InfoUserComponent implements OnInit {
 
   currentUser:User;
-  @Input()imgUrl: string;
+  nomUser:string;
+  prenomUser:string;
+  @Input() imgUrl: string;
+
+  userSubscription: Subscription;
+
 
   constructor(private userService: UserService) {
-    this.currentUser = this.userService.getUser();
   }
 
-  ngOnInit() {}
+  ngOnInit() {  
+    
+    this.userSubscription = this.userService.userSubject
+    .subscribe(
+      (user:User) => {
+        this.currentUser = user;
+        this.nomUser = this.currentUser.getNom();
+        this.prenomUser = this.currentUser.getPrenom();
+        console.log("user mis a jour");
+      },
+      (err) => {
+        console.log("##ERROR Subscription user" + err);
+      },
+      () => {
+        console.log("Subscription user terminé");
+      }
+    );
 
-  updateUrl(event){
-    console.log(event);
-    this.imgUrl = "/assets/img/1.jpg";
   }
+
+  getNom(){
+    if (typeof this.currentUser.getNom() === 'undefined') return null;
+    return this.currentUser.getNom();
+  }
+
+  getPrenom(){
+    if (typeof this.currentUser.getPrenom() === 'undefined') return null;
+    return this.currentUser.getPrenom();
+  }
+
+  doesUserDataExist(){
+    if(this.currentUser.getNom()) return true;
+    return false;
+}
 
 }

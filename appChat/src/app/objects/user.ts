@@ -37,7 +37,7 @@ export class User {
         this.messages.push(new Message(text, idExp, idDes));
     }
 
-    getMessage(){
+    getAllMessage(){
         return this.messages;
     }
 

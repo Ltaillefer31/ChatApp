@@ -25,11 +25,17 @@ export class LoginPage implements OnInit {
 
     this.authService.login(formData)
     .subscribe(
-      (data) =>{
-        console.log(data);
+      (data) => {
         if(data["isUserExist"]){
-          this.userService.setUser(data["userData"]);
-          this.router.navigate(['/home']);
+          //on store les infos de l'utilisateur pour les réutilisé en cas de rafraichissement de la page
+          sessionStorage.setItem("userData", JSON.stringify(data["userData"]));
+          sessionStorage.setItem("tokenCrsf", data["tokenCrsf"]);
+          sessionStorage.setItem("expirationTokenCrsf", data["expiresDate"]);
+          sessionStorage.setItem("creationToken", data["creationDate"]);
+
+          this.userService.majUser();
+
+          this.router.navigate(['/main-page']);          
         }else{
           this.invalidLogin = true;
         }        

@@ -25,7 +25,7 @@ export class MessageSpaceComponent implements OnInit {
         this.getMessage();
       },
       (err) =>{
-        console.log("##ERROR subsription" + JSON.stringify(err));
+        console.log("##ERROR subsription id" + JSON.stringify(err));
       },
       () => {
         console.log("complete");
@@ -34,9 +34,11 @@ export class MessageSpaceComponent implements OnInit {
   }
 
   sendMsg(){
-    this.userService.sendMsg(this.message, this.idFriend);
-    this.getMessage();
-    this.message="";
+    if(this.message != ""){
+      this.userService.sendMsg(this.message, this.idFriend);
+      this.getMessage();
+      this.message="";
+    }    
   }
 
   getMessage(){

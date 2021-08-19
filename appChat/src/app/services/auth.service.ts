@@ -5,13 +5,14 @@ import { Injectable } from '@angular/core';
 export class AuthService{
 
     HOSTNAME:string = "http://localhost/apiAppChating/request/";
+    HOSTNAME2:string = "http://localhost/AuthServer/request/"
 
     constructor(private httpClient: HttpClient){
 
     }
 
     login(form){
-    let urlApi = this.HOSTNAME.concat("AuthRequest/login.php");
+        let urlApi = this.HOSTNAME2.concat("login.php");
         
         return this.httpClient.post(urlApi,form);
     }
