@@ -9,6 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AuthService } from './services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UserService } from './services/user.service';
+import { CommunicationService } from './services/communication.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,7 +18,8 @@ import { UserService } from './services/user.service';
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     AuthService,
-    UserService  
+    UserService,
+    CommunicationService  
   ],
   bootstrap: [AppComponent],
 })

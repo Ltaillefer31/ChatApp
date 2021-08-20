@@ -1,6 +1,8 @@
+import { LEADING_TRIVIA_CHARS } from "@angular/compiler/src/render3/view/template";
 import { OnInit, Injectable } from "@angular/core";
 import { Subject, Subscription } from "rxjs";
 import { User } from "../objects/user";
+import { CommunicationService } from "./communication.service";
 
 @Injectable()
 export class UserService implements OnInit{
@@ -13,7 +15,7 @@ export class UserService implements OnInit{
     userSubject = new Subject<User>();
 
 
-    constructor(){     
+    constructor(private communicationService: CommunicationService){     
         
     }
 
@@ -36,8 +38,37 @@ export class UserService implements OnInit{
         setTimeout( () => {
             this.emitUserSubject();
         }, 200);
+
+        this.refreshFriendList();
         
         // this.emitFriendSubject();            
+    }
+
+    refreshFriendList(){
+        // let url = "FriendRequest/addFriend.php";
+        // let tokenCrsf = sessionStorage.getItem('tokenCrsf');
+
+        // let formDataSendToServer = new FormData();
+
+        // let paramsJson = '{"message":' + text + ',"idDestinataire":'+ idAddressee + ',"idEnvoyeur":' + this.user.getId() + '}';
+        // console.log(paramsJson);
+
+        // formDataSendToServer.append('params', paramsJson);
+        // formDataSendToServer.append('pathToGo', url);
+        // formDataSendToServer.append('tokenCrsf', tokenCrsf);
+        
+
+        // this.user.addMessage(text, this.user.getId(),idAddressee);
+        // this.communicationService.requestToServer(formDataSendToServer)
+        // .subscribe(
+        //     (reponse) => {
+        //         console.log(reponse);
+        //     },
+        //     (err) => {
+        //         console.log("##ERROR envoi de message" + JSON.stringify(err));
+        //     }
+        // );
+
     }
 
     isUserConnected(){
@@ -92,7 +123,20 @@ export class UserService implements OnInit{
     }
 
     sendMsg(text,idAddressee){
-        this.user.addMessage(text, this.user.getId(),idAddressee);
+        let url = "MessageRequest/addMessage.php";
+
+        let paramsJson = '{"message":' + text + ',"idDestinataire":'+ idAddressee + ',"idEnvoyeur":' + this.user.getId() + '}';        
+
+        this.communicationService.requestToServer(url, paramsJson)
+        .subscribe(
+            (reponse) => {
+                console.log(reponse);
+                this.user.addMessage(text, this.user.getId(),idAddressee);
+            },
+            (err) => {
+                console.log("##ERROR envoi de message" + JSON.stringify(err));
+            }
+        );
     }
 
     getFriendById(id){
@@ -118,13 +162,38 @@ export class UserService implements OnInit{
 
     addMessageForId(id){
         let friend = this.getFriendById(id);
+
+        let friendId = friend.getId();
+        let userId = this.user.getId();
+
         for(let i = 0; i < 4; i++){
             setTimeout(() => {
-                friend.addMessage("test"+friend.getId(), friend.getId(), this.user.getId());
+                friend.addMessage("test"+friendId, friendId, userId);
             }, 100);
             setTimeout(() => {
-                this.user.addMessage("test"+this.user.getId(), this.user.getId(), friend.getId());
+                this.user.addMessage("test"+userId, userId, friendId);
             }, 100);            
         }            
+    }
+
+    addFriend(id1,id2){
+        let url = "FriendRequest/addFriend.php";
+
+        let test = {"id1":id1, "id2":id2};
+
+        // let paramsJson = '{"id1":' + id1 + ',"id2":'+ id2 + '}';
+        let paramsJson = JSON.stringify(test);
+        console.log(paramsJson);
+
+        this.communicationService.requestToServer(url, paramsJson)
+        .subscribe(
+            (reponse) => {
+                console.log(reponse);
+                this.listFriends.push(new User("test2","test2",5));
+            },
+            (err) => {
+                console.log("##ERROR envoi de message" + JSON.stringify(err));
+            }
+        );        
     }
 }

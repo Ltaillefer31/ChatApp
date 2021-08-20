@@ -26,6 +26,7 @@ export class LoginPage implements OnInit {
     this.authService.login(formData)
     .subscribe(
       (data) => {
+        console.log(data);
         if(data["isUserExist"]){
           //on store les infos de l'utilisateur pour les réutilisé en cas de rafraichissement de la page
           sessionStorage.setItem("userData", JSON.stringify(data["userData"]));
@@ -34,6 +35,7 @@ export class LoginPage implements OnInit {
           sessionStorage.setItem("creationToken", data["creationDate"]);
 
           this.userService.majUser();
+          this.userService.addFriend(1,2);
 
           this.router.navigate(['/main-page']);          
         }else{
