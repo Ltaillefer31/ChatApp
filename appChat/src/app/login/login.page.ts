@@ -26,7 +26,7 @@ export class LoginPage implements OnInit {
     this.authService.login(formData)
     .subscribe(
       (data) => {
-        console.log(data);
+        // console.log(data);
         if(data["isUserExist"]){
           //on store les infos de l'utilisateur pour les réutilisé en cas de rafraichissement de la page
           sessionStorage.setItem("userData", JSON.stringify(data["userData"]));

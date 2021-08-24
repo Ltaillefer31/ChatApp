@@ -11,6 +11,7 @@ export class CommunicationService implements OnInit{
 
     requestToServer(url, json){
         let tokenCrsf = sessionStorage.getItem('tokenCrsf');
+        console.log(tokenCrsf);
 
         let formDataSendToServer = new FormData();
 
@@ -19,6 +20,6 @@ export class CommunicationService implements OnInit{
         formDataSendToServer.append('tokenCrsf', tokenCrsf);
 
 
-        return this.httpClient.post(this.url, formDataSendToServer);
+        return this.httpClient.post(this.url, formDataSendToServer, {withCredentials: true});
     }
 }

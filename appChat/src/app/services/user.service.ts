@@ -39,7 +39,7 @@ export class UserService implements OnInit{
             this.emitUserSubject();
         }, 200);
 
-        this.refreshFriendList();
+        // this.refreshFriendList();
         
         // this.emitFriendSubject();            
     }
@@ -179,21 +179,39 @@ export class UserService implements OnInit{
     addFriend(id1,id2){
         let url = "FriendRequest/addFriend.php";
 
-        let test = {"id1":id1, "id2":id2};
+        let formData = new FormData();
 
-        // let paramsJson = '{"id1":' + id1 + ',"id2":'+ id2 + '}';
-        let paramsJson = JSON.stringify(test);
-        console.log(paramsJson);
+        formData.append("id1", id1);
+        formData.append("id2", id2);
+
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        
+        let paramsJson = JSON.stringify(object);
 
         this.communicationService.requestToServer(url, paramsJson)
         .subscribe(
             (reponse) => {
+                if(reponse["validOperation"]){
+                    this.listFriends.push(new User("test2","test2",5));
+                }
                 console.log(reponse);
-                this.listFriends.push(new User("test2","test2",5));
             },
             (err) => {
                 console.log("##ERROR envoi de message" + JSON.stringify(err));
             }
         );        
+    }
+
+    getFriendFromServer(){
+        let url = "FriendRequest/addFriend.php";
+
+        let formData = new FormData();
+
+        formData.append("id", this.user.getId());
+
+
     }
 }

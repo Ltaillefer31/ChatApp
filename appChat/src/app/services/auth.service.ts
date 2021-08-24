@@ -13,8 +13,9 @@ export class AuthService{
 
     login(form){
         let urlApi = this.HOSTNAME2.concat("login.php");
+
         
-        return this.httpClient.post(urlApi,form);
+        return this.httpClient.post(urlApi,form,{withCredentials:true});
     }
 
     signup(form){
