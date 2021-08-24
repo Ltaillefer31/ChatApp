@@ -11,6 +11,7 @@ import { InfoUserModule } from '../info-user/info-user.module';
 import { FinderModule } from '../finder/finder.module';
 import { ListContactModule } from '../list-contact/list-contact.module';
 import { MessageSpaceModule } from '../message-space/message-space.module';
+import { InfoFriendModule } from '../info-friend/info-friend.module';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { MessageSpaceModule } from '../message-space/message-space.module';
     InfoUserModule,
     FinderModule,
     ListContactModule,
-    MessageSpaceModule    
+    MessageSpaceModule,
+    InfoFriendModule    
   ],
   declarations: [MainPagePage]
 })

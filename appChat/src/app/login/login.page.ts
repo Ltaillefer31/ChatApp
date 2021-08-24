@@ -35,7 +35,6 @@ export class LoginPage implements OnInit {
           sessionStorage.setItem("creationToken", data["creationDate"]);
 
           this.userService.majUser();
-          this.userService.addFriend(1,2);
 
           this.router.navigate(['/main-page']);          
         }else{

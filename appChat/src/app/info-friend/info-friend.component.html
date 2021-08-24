@@ -1,3 +1,25 @@
-<p>
-  info-friend works!
-</p>
+<div class="container" *ngIf="printInfoFriend">
+  <div class="imgUser">
+    <img  class="profil_picture"
+          src="/assets/image/profil.jpg"
+          alt="c'est moi">
+  </div>
+  <div class="infoUser">
+    <div class="name">
+      <div class="field-name">
+        <p>{{surnameFriend}} {{nameFriend}}</p>
+      </div>
+    </div>
+    <div class="status">
+      <div class="status-color">
+        <div class="status-color-field"></div>
+      </div>
+      <div class="status-info">
+        <div class="status-info-field">
+          <p>En ligne</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

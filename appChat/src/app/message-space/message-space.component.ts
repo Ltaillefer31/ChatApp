@@ -14,6 +14,7 @@ export class MessageSpaceComponent implements OnInit {
   @Input() message:string;
   idFriend:number;
   idFriendSubcription: Subscription;
+  listMessagesSubscription: Subscription;
 
   constructor(private userService:UserService) {}
 
@@ -22,7 +23,6 @@ export class MessageSpaceComponent implements OnInit {
     .subscribe(
       (id:number) => {
         this.idFriend = id;
-        this.getMessage();
       },
       (err) =>{
         console.log("##ERROR subsription id" + JSON.stringify(err));
@@ -30,19 +30,42 @@ export class MessageSpaceComponent implements OnInit {
       () => {
         console.log("complete");
       }
-    )    
+    )
+    
+    this.listMessagesSubscription = this.userService.listMessageSubject
+    .subscribe(
+      (listMessage) => {
+        this.listMessages = listMessage;
+      },
+      (error) => {
+        console.log("##ERROR récupération des messages : " + JSON.stringify(error));
+      }
+    )
   }
 
   sendMsg(){
     if(this.message != ""){
-      this.userService.sendMsg(this.message, this.idFriend);
-      this.getMessage();
-      this.message="";
+      this.userService.sendMsg(this.message, this.idFriend)
+      .subscribe(
+        (reponse) => {
+            this.userService.addMessage(this.message, this.userService.getUserId(),this.idFriend);
+            // this.getMessage();
+            this.message="";
+        },
+        (err) => {
+            console.log("##ERROR envoi de message" + JSON.stringify(err));
+        }
+      );
     }    
   }
 
   getMessage(){
-    this.listMessages = this.userService.getMessage(this.userService.getFriendById(this.idFriend).getId());
+    this.listMessages = this.userService.getMessage(this.idFriend);
+    console.log(this.listMessages);
+  }
+
+  refreshMessage(){
+
   }
 
 

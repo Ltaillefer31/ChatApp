@@ -11,7 +11,6 @@ export class CommunicationService implements OnInit{
 
     requestToServer(url, json){
         let tokenCrsf = sessionStorage.getItem('tokenCrsf');
-        console.log(tokenCrsf);
 
         let formDataSendToServer = new FormData();
 

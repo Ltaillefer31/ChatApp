@@ -23,7 +23,7 @@ export class ContactComponent implements OnInit {
   }
 
   connectToFriend(){
-    this.userService.setIdFriend(this.friendUser.getId());
+    this.userService.setFriend(this.friendUser.getId(), this.friendUser);
   }
 
 }

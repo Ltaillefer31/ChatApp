@@ -1,6 +1,7 @@
 import { LEADING_TRIVIA_CHARS } from "@angular/compiler/src/render3/view/template";
 import { OnInit, Injectable } from "@angular/core";
 import { Subject, Subscription } from "rxjs";
+import { Message } from "../objects/message";
 import { User } from "../objects/user";
 import { CommunicationService } from "./communication.service";
 
@@ -13,6 +14,8 @@ export class UserService implements OnInit{
     idFriendSubject = new Subject<number>();
 
     userSubject = new Subject<User>();
+    friendSubject = new Subject<User>();
+    listMessageSubject = new Subject<Message[]>();
 
 
     constructor(private communicationService: CommunicationService){     
@@ -22,13 +25,30 @@ export class UserService implements OnInit{
     ngOnInit() {        
     }
 
-    emitFriendSubject(){
+    emitIdFriendSubject(){
         this.idFriendSubject.next(this.idFriend);
     }
 
     emitUserSubject(){       
         this.userSubject.next(this.user);
         console.log("user Sended");
+    }
+
+    emitFriendSubject(user : User){ 
+        this.friendSubject.next(user);
+    }
+
+    emitListMessage(id){
+        this.listMessageSubject.next(this.getMessage(id));
+    }
+
+    setFriend(id, user : User){
+        this.idFriend = id;
+        this.refreshMessageList();
+        // this.addMessageForId(this.idFriend);
+        this.emitIdFriendSubject();
+        this.emitFriendSubject(user);
+        this.emitListMessage(id); 
     }
 
     majUser(){
@@ -38,37 +58,63 @@ export class UserService implements OnInit{
         setTimeout( () => {
             this.emitUserSubject();
         }, 200);
-
-        // this.refreshFriendList();
-        
-        // this.emitFriendSubject();            
+        this.refreshFriendList();
+        // this.refreshMessageList();        
     }
 
     refreshFriendList(){
-        // let url = "FriendRequest/addFriend.php";
-        // let tokenCrsf = sessionStorage.getItem('tokenCrsf');
+        let url = "FriendRequest/getAllFriends.php";
 
-        // let formDataSendToServer = new FormData();
+        let formData = new FormData();
 
-        // let paramsJson = '{"message":' + text + ',"idDestinataire":'+ idAddressee + ',"idEnvoyeur":' + this.user.getId() + '}';
-        // console.log(paramsJson);
+        formData.append("id", this.user.getId());
 
-        // formDataSendToServer.append('params', paramsJson);
-        // formDataSendToServer.append('pathToGo', url);
-        // formDataSendToServer.append('tokenCrsf', tokenCrsf);
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
         
+        let paramsJson = JSON.stringify(object);
 
-        // this.user.addMessage(text, this.user.getId(),idAddressee);
-        // this.communicationService.requestToServer(formDataSendToServer)
-        // .subscribe(
-        //     (reponse) => {
-        //         console.log(reponse);
-        //     },
-        //     (err) => {
-        //         console.log("##ERROR envoi de message" + JSON.stringify(err));
-        //     }
-        // );
+        this.communicationService.requestToServer(url, paramsJson)
+        .subscribe(
+            (response) => {
+                for(let i = 0; i < response["records"].length; i++){
+                    this.listFriends.push(new User(response["records"][i]["nom"], response["records"][i]["prenom"], response["records"][i]["id"]));
+                }
+            },
+            (err) => {
+                console.log("##ERROR rafraichissement list d'ami : " + JSON.stringify(err));
+            }
+        );
+    }
 
+    refreshMessageList(){
+        let url = "MessageRequest/getMessageForId.php";
+
+        let formData = new FormData();
+
+        formData.append("id1", this.user.getId());
+        formData.append("id2", String(this.idFriend));
+
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        
+        let paramsJson = JSON.stringify(object);
+
+        this.communicationService.requestToServer(url, paramsJson)
+        .subscribe(
+            (response) => {
+                for(let i = 0; i < response["records"].length; i++){
+                    this.addMessage(response["records"][i]["Message"],response["records"][i]["Sender"],response["records"][i]["Addressee"]);
+                }
+            },
+            (err) => {
+                console.log("##ERROR rafraichissement message list : " + JSON.stringify(err));
+            }
+        );
     }
 
     isUserConnected(){
@@ -92,15 +138,13 @@ export class UserService implements OnInit{
     setUser(info){
         this.user = new User(info["nom"], info["prenom"], info["id"]);
     }
-
-    setIdFriend(id){
-        this.idFriend = id;
-        // this.addMessageForId(this.idFriend);
-        this.emitFriendSubject();        
-    }
     
     getUser(){
         return this.user;
+    }
+
+    getUserId(){
+        return this.user.getId();
     }
 
     getFriendList(){
@@ -125,18 +169,20 @@ export class UserService implements OnInit{
     sendMsg(text,idAddressee){
         let url = "MessageRequest/addMessage.php";
 
-        let paramsJson = '{"message":' + text + ',"idDestinataire":'+ idAddressee + ',"idEnvoyeur":' + this.user.getId() + '}';        
+        let formData = new FormData();
+        formData.append("idDestinataire", idAddressee);
+        formData.append("idEnvoyeur", this.user.getId());
+        formData.append("message", text);
 
-        this.communicationService.requestToServer(url, paramsJson)
-        .subscribe(
-            (reponse) => {
-                console.log(reponse);
-                this.user.addMessage(text, this.user.getId(),idAddressee);
-            },
-            (err) => {
-                console.log("##ERROR envoi de message" + JSON.stringify(err));
-            }
-        );
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        
+        let paramsJson = JSON.stringify(object);
+
+
+        return this.communicationService.requestToServer(url, paramsJson);
     }
 
     getFriendById(id){
@@ -147,7 +193,12 @@ export class UserService implements OnInit{
         }
     }   
 
-    addMessage(){
+    addMessage(text, idSender, idAddressee){
+        this.user.addMessage(text, idSender, idAddressee);
+        this.emitListMessage(idAddressee);
+    }
+
+    addMessageForTest(){
         for(let userFriend of this.listFriends){
             for(let i = 0; i < 5; i++){
                 setTimeout(() => {
@@ -203,15 +254,5 @@ export class UserService implements OnInit{
                 console.log("##ERROR envoi de message" + JSON.stringify(err));
             }
         );        
-    }
-
-    getFriendFromServer(){
-        let url = "FriendRequest/addFriend.php";
-
-        let formData = new FormData();
-
-        formData.append("id", this.user.getId());
-
-
     }
 }

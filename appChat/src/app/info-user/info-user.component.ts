@@ -54,6 +54,6 @@ export class InfoUserComponent implements OnInit {
   doesUserDataExist(){
     if(this.currentUser.getNom()) return true;
     return false;
-}
+  }
 
 }
