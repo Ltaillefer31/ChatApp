@@ -37,6 +37,10 @@ export class User {
         this.messages.push(new Message(text, idExp, idDes));
     }
 
+    eraseMessage(){
+        this.messages = new Array<Message>();
+    }
+
     getAllMessage(){
         return this.messages;
     }
@@ -44,7 +48,7 @@ export class User {
     getMessageById(id){
         let arrReturnedMessage = new Array<Message>();
         for(let message of this.messages){
-            if(message.getIdAddressee() == id){
+            if(message.getIdAddressee() == id || message.getIdSender() == id){
                 arrReturnedMessage.push(message);
             }
         }

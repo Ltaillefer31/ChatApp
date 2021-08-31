@@ -1,6 +1,6 @@
 import { LEADING_TRIVIA_CHARS } from "@angular/compiler/src/render3/view/template";
-import { OnInit, Injectable } from "@angular/core";
-import { Subject, Subscription } from "rxjs";
+import { OnInit, Injectable, NgZone } from "@angular/core";
+import { Observable, Subject, Subscription } from "rxjs";
 import { Message } from "../objects/message";
 import { User } from "../objects/user";
 import { CommunicationService } from "./communication.service";
@@ -18,11 +18,12 @@ export class UserService implements OnInit{
     listMessageSubject = new Subject<Message[]>();
 
 
-    constructor(private communicationService: CommunicationService){     
+    constructor(private communicationService: CommunicationService) {     
         
     }
 
-    ngOnInit() {        
+    ngOnInit() {
+        
     }
 
     emitIdFriendSubject(){
@@ -38,17 +39,15 @@ export class UserService implements OnInit{
         this.friendSubject.next(user);
     }
 
-    emitListMessage(id){
-        this.listMessageSubject.next(this.getMessage(id));
+    emitListMessage(){
+        this.listMessageSubject.next(this.getMessage());
     }
 
     setFriend(id, user : User){
         this.idFriend = id;
         this.refreshMessageList();
-        // this.addMessageForId(this.idFriend);
         this.emitIdFriendSubject();
         this.emitFriendSubject(user);
-        this.emitListMessage(id); 
     }
 
     majUser(){
@@ -59,7 +58,6 @@ export class UserService implements OnInit{
             this.emitUserSubject();
         }, 200);
         this.refreshFriendList();
-        // this.refreshMessageList();        
     }
 
     refreshFriendList(){
@@ -107,9 +105,11 @@ export class UserService implements OnInit{
         this.communicationService.requestToServer(url, paramsJson)
         .subscribe(
             (response) => {
+                this.user.eraseMessage();
                 for(let i = 0; i < response["records"].length; i++){
-                    this.addMessage(response["records"][i]["Message"],response["records"][i]["Sender"],response["records"][i]["Addressee"]);
+                    this.user.addMessage(response["records"][i]["Message"],response["records"][i]["Sender"],response["records"][i]["Addressee"]);
                 }
+                this.emitListMessage();
             },
             (err) => {
                 console.log("##ERROR rafraichissement message list : " + JSON.stringify(err));
@@ -147,23 +147,27 @@ export class UserService implements OnInit{
         return this.user.getId();
     }
 
+    getFriendId(){
+        return this.idFriend;
+    }
+
     getFriendList(){
         return this.listFriends;
     }
 
-    getMessage(idAddressee){
-        let returnedMessage = new Array();
-        //Recupération des messages du user vers ami
-        let messageOfFriendtoUser = this.getFriendById(idAddressee).getMessageById(this.user.getId());
+    getMessage(){
         //Récuperation des messages de ami vers user
         let messageOfUserToFriend = this.user.getMessageById(this.idFriend);
+        messageOfUserToFriend.sort((a,b) => a.date - b.date );
 
-        //Concaténation des deux arrays
-        returnedMessage = messageOfUserToFriend.concat(messageOfFriendtoUser);
-        //Trier les messages par date
-        returnedMessage.sort((a,b) => a.date - b.date );
-        return returnedMessage;
+        return messageOfUserToFriend;
         
+    }
+
+    getNumberOfMessage(): number{
+        let messageOfUserToFriend = this.user.getMessageById(this.idFriend);
+
+        return messageOfUserToFriend.length;
     }
 
     sendMsg(text,idAddressee){
@@ -195,7 +199,7 @@ export class UserService implements OnInit{
 
     addMessage(text, idSender, idAddressee){
         this.user.addMessage(text, idSender, idAddressee);
-        this.emitListMessage(idAddressee);
+        this.refreshMessageList();
     }
 
     addMessageForTest(){
@@ -254,5 +258,35 @@ export class UserService implements OnInit{
                 console.log("##ERROR envoi de message" + JSON.stringify(err));
             }
         );        
+    }
+
+    checkForUpdate(){
+        let url = "MessageRequest/compareNumberOfMessage.php";
+
+        let formData = new FormData();
+
+        formData.append("id1", this.user.getId());
+        formData.append("id2", String(this.idFriend));
+        formData.append("numberOfMessage", String(this.getNumberOfMessage()));
+
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        
+        let paramsJson = JSON.stringify(object);
+
+
+        this.communicationService.requestToServer(url,paramsJson)
+        .subscribe(
+            (response) => {
+                if(response["sameAmount"] == false){
+                    this.refreshMessageList();
+                }
+            },
+            (err) => {
+                console.log("##ERROR " + JSON.stringify(err));
+            }
+        );
     }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from '../objects/message';
 import { UserService } from '../services/user.service';
@@ -19,6 +19,12 @@ export class MessageSpaceComponent implements OnInit {
   constructor(private userService:UserService) {}
 
   ngOnInit() {
+
+    setInterval(() => {
+      this.userService.checkForUpdate();
+    }, 250);
+
+
     this.idFriendSubcription = this.userService.idFriendSubject
     .subscribe(
       (id:number) => {
@@ -30,17 +36,18 @@ export class MessageSpaceComponent implements OnInit {
       () => {
         console.log("complete");
       }
-    )
+    );
     
     this.listMessagesSubscription = this.userService.listMessageSubject
     .subscribe(
       (listMessage) => {
         this.listMessages = listMessage;
+        // console.log(this.listMessages);
       },
       (error) => {
         console.log("##ERROR récupération des messages : " + JSON.stringify(error));
       }
-    )
+    );
   }
 
   sendMsg(){
@@ -49,7 +56,6 @@ export class MessageSpaceComponent implements OnInit {
       .subscribe(
         (reponse) => {
             this.userService.addMessage(this.message, this.userService.getUserId(),this.idFriend);
-            // this.getMessage();
             this.message="";
         },
         (err) => {
@@ -60,13 +66,8 @@ export class MessageSpaceComponent implements OnInit {
   }
 
   getMessage(){
-    this.listMessages = this.userService.getMessage(this.idFriend);
-    console.log(this.listMessages);
+    this.listMessages = this.userService.getMessage();
+    console.log("passe par message-space ");
   }
-
-  refreshMessage(){
-
-  }
-
 
 }

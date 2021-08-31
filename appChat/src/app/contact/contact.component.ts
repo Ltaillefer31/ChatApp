@@ -23,7 +23,9 @@ export class ContactComponent implements OnInit {
   }
 
   connectToFriend(){
-    this.userService.setFriend(this.friendUser.getId(), this.friendUser);
+    if(this.userService.getFriendId() != this.id){
+      this.userService.setFriend(this.friendUser.getId(), this.friendUser);
+    }
   }
 
 }

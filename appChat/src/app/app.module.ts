@@ -19,7 +19,7 @@ import { CommunicationService } from './services/communication.service';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     AuthService,
     UserService,
-    CommunicationService  
+    CommunicationService,
   ],
   bootstrap: [AppComponent],
 })

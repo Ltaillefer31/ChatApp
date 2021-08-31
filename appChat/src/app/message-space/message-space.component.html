@@ -1,5 +1,5 @@
 <div class="container"> 
-  <div class="spaceMessage">
+  <div class="spaceMessage" #scrollMe [scrollTop]="scrollMe.scrollHeight">
 
     <div class="message" *ngFor="let message of listMessages">
       <div [ngClass]="{
