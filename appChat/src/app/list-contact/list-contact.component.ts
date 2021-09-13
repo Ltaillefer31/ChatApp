@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { User } from '../objects/user';
 import { UserService } from '../services/user.service';
 
@@ -10,13 +11,22 @@ import { UserService } from '../services/user.service';
 export class ListContactComponent implements OnInit {
 
   listFriends:User[] = new Array<User>();
+  listFriendSubscriptions:Subscription = new Subscription();
 
   constructor(private userService: UserService) {
     
   }
 
   ngOnInit() {
-    this.listFriends = this.userService.getFriendList();
+    this.listFriendSubscriptions = this.userService.listFriendSubject
+    .subscribe(
+      (response) => {
+        this.listFriends = response;
+      },
+      (err) => {
+        console.log("error getting friend from user Service")
+      }
+    )
   }
 
   

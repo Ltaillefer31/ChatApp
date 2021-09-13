@@ -12,6 +12,8 @@ import { FinderModule } from '../finder/finder.module';
 import { ListContactModule } from '../list-contact/list-contact.module';
 import { MessageSpaceModule } from '../message-space/message-space.module';
 import { InfoFriendModule } from '../info-friend/info-friend.module';
+import { OptionNavModule } from '../option-nav/option-nav.module';
+import { AddFriendModule } from '../add-friend/add-friend.module';
 
 @NgModule({
   imports: [
@@ -23,7 +25,9 @@ import { InfoFriendModule } from '../info-friend/info-friend.module';
     FinderModule,
     ListContactModule,
     MessageSpaceModule,
-    InfoFriendModule    
+    InfoFriendModule, 
+    OptionNavModule,
+    AddFriendModule    
   ],
   declarations: [MainPagePage]
 })

@@ -1,8 +1,10 @@
 import { LEADING_TRIVIA_CHARS } from "@angular/compiler/src/render3/view/template";
 import { OnInit, Injectable, NgZone } from "@angular/core";
+import { Router } from "@angular/router";
 import { Observable, Subject, Subscription } from "rxjs";
 import { Message } from "../objects/message";
 import { User } from "../objects/user";
+import { AuthService } from "./auth.service";
 import { CommunicationService } from "./communication.service";
 
 @Injectable()
@@ -16,14 +18,22 @@ export class UserService implements OnInit{
     userSubject = new Subject<User>();
     friendSubject = new Subject<User>();
     listMessageSubject = new Subject<Message[]>();
+    listFriendSubject = new Subject<User[]>();
 
 
-    constructor(private communicationService: CommunicationService) {     
+    constructor(private communicationService: CommunicationService, private authService: AuthService, private router: Router) {     
         
     }
 
     ngOnInit() {
-        
+    }
+
+    reset(){
+        localStorage.removeItem('userData');
+        localStorage.removeItem('tokenCsrf');
+        localStorage.removeItem('expirationTokenCrsf');
+        localStorage.removeItem('creationToken');
+        this.listFriends = [];
     }
 
     emitIdFriendSubject(){
@@ -32,7 +42,6 @@ export class UserService implements OnInit{
 
     emitUserSubject(){       
         this.userSubject.next(this.user);
-        console.log("user Sended");
     }
 
     emitFriendSubject(user : User){ 
@@ -41,6 +50,10 @@ export class UserService implements OnInit{
 
     emitListMessage(){
         this.listMessageSubject.next(this.getMessage());
+    }
+    
+    emitListFriend(){
+        this.listFriendSubject.next(this.listFriends)
     }
 
     setFriend(id, user : User){
@@ -51,35 +64,32 @@ export class UserService implements OnInit{
     }
 
     majUser(){
-        let userData = JSON.parse(sessionStorage.getItem("userData"));
+        let userData = JSON.parse(localStorage.getItem("userData"));
         
-        this.setUser(userData);
-        setTimeout( () => {
+        this.setUser(userData).then(() => {
             this.emitUserSubject();
-        }, 200);
+        });
         this.refreshFriendList();
     }
 
-    refreshFriendList(){
+    refreshFriendList(){ 
         let url = "FriendRequest/getAllFriends.php";
 
-        let formData = new FormData();
-
-        formData.append("id", this.user.getId());
-
-        var object = {};
-        formData.forEach(function(value, key){
-            object[key] = value;
-        });
+        let jsonSend = {
+            "id": this.user.getId()
+        }
         
-        let paramsJson = JSON.stringify(object);
+        let paramsJson = JSON.stringify(jsonSend);
 
         this.communicationService.requestToServer(url, paramsJson)
         .subscribe(
             (response) => {
+                console.log(response)
+                // this.listFriends = new Array<User>();
                 for(let i = 0; i < response["records"].length; i++){
                     this.listFriends.push(new User(response["records"][i]["nom"], response["records"][i]["prenom"], response["records"][i]["id"]));
                 }
+                this.emitListFriend()
             },
             (err) => {
                 console.log("##ERROR rafraichissement list d'ami : " + JSON.stringify(err));
@@ -90,22 +100,18 @@ export class UserService implements OnInit{
     refreshMessageList(){
         let url = "MessageRequest/getMessageForId.php";
 
-        let formData = new FormData();
-
-        formData.append("id1", this.user.getId());
-        formData.append("id2", String(this.idFriend));
-
-        var object = {};
-        formData.forEach(function(value, key){
-            object[key] = value;
-        });
+        let jsonSend = {
+            "id1" : this.user.getId(),
+            "id2":String(this.idFriend)
+        }
         
-        let paramsJson = JSON.stringify(object);
+        let paramsJson = JSON.stringify(jsonSend);
 
         this.communicationService.requestToServer(url, paramsJson)
         .subscribe(
             (response) => {
                 this.user.eraseMessage();
+                console.log("refresh message : " + JSON.stringify(response))
                 for(let i = 0; i < response["records"].length; i++){
                     this.user.addMessage(response["records"][i]["Message"],response["records"][i]["Sender"],response["records"][i]["Addressee"]);
                 }
@@ -118,25 +124,32 @@ export class UserService implements OnInit{
     }
 
     isUserConnected(){
-        let userConnected = true;
-        let expireToken = sessionStorage.getItem("expirationTokenCrsf");
-        let actualDate = Math.floor(Date.now() / 1000);
-        let userData = JSON.parse(sessionStorage.getItem("userData"));
+        let userConnected = false;
+        if(localStorage.getItem("expirationTokenCrsf")){
+            let expireToken = localStorage.getItem("expirationTokenCrsf");
+            let actualDate = Math.floor(Date.now() / 1000);
+            let userData = JSON.parse(localStorage.getItem("userData"));
+            console.log(userData);
 
-        if(typeof userData === "undefined"){
-            console.log("userData non existante");
-            userConnected = false;
-        }else if (Number(expireToken) < actualDate){
-            console.log("token CRSF expiré");
-            userConnected = false;   
+            if(typeof userData === "undefined"){
+                console.log("userData non existante");
+                userConnected = false;
+            }else if (Number(expireToken) < actualDate){
+                console.log("token CRSF expiré");
+                userConnected = false;   
+            }else{
+                userConnected = true;
+            }                
         }
-
-
+        
         return userConnected;
     }
 
     setUser(info){
-        this.user = new User(info["nom"], info["prenom"], info["id"]);
+        return new Promise((resolve, reject) => {
+            this.user = new User(info["nom"], info["prenom"], info["id"]);
+            resolve("done")
+        })
     }
     
     getUser(){
@@ -173,17 +186,13 @@ export class UserService implements OnInit{
     sendMsg(text,idAddressee){
         let url = "MessageRequest/addMessage.php";
 
-        let formData = new FormData();
-        formData.append("idDestinataire", idAddressee);
-        formData.append("idEnvoyeur", this.user.getId());
-        formData.append("message", text);
-
-        var object = {};
-        formData.forEach(function(value, key){
-            object[key] = value;
-        });
+        let jsonSend = {
+            "idDestinataire":idAddressee,
+            "idEnvoyeur":this.user.getId(),
+            "message":text
+        }
         
-        let paramsJson = JSON.stringify(object);
+        let paramsJson = JSON.stringify(jsonSend);
 
 
         return this.communicationService.requestToServer(url, paramsJson);
@@ -231,13 +240,13 @@ export class UserService implements OnInit{
         }            
     }
 
-    addFriend(id1,id2){
+    addFriend(idFriend){
         let url = "FriendRequest/addFriend.php";
 
         let formData = new FormData();
 
-        formData.append("id1", id1);
-        formData.append("id2", id2);
+        formData.append("id1", this.getUserId());
+        formData.append("id2", idFriend);
 
         var object = {};
         formData.forEach(function(value, key){
@@ -288,5 +297,24 @@ export class UserService implements OnInit{
                 console.log("##ERROR " + JSON.stringify(err));
             }
         );
+    }
+
+    disconnect(){
+        let json = {
+            "isLogin": false,
+            "isLogout" :true
+        }
+
+        this.authService.log(json)
+        .subscribe( 
+            (response) => {
+                console.log(response["message"]);
+                this.reset();
+                this.router.navigate(['/login']);
+            },
+            (err) => {
+                console.log("##ERROR not disconnect : " + JSON.stringify(err));
+            }
+        )
     }
 }

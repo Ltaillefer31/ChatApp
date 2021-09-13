@@ -20,9 +20,9 @@ export class MessageSpaceComponent implements OnInit {
 
   ngOnInit() {
 
-    setInterval(() => {
-      this.userService.checkForUpdate();
-    }, 250);
+    // setInterval(() => {
+    //   this.userService.checkForUpdate();
+    // }, 250);
 
 
     this.idFriendSubcription = this.userService.idFriendSubject

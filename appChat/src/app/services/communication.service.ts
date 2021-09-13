@@ -3,22 +3,24 @@ import { Injectable, OnInit } from "@angular/core";
 
 @Injectable()
 export class CommunicationService implements OnInit{
-    url :string = "http://localhost/AuthServer/request/verifyUser.php";
+    url :string = "http://localhost:3000/verifyUser";
 
     constructor(private httpClient: HttpClient){}
 
     ngOnInit(){}
 
     requestToServer(url, json){
-        let tokenCrsf = sessionStorage.getItem('tokenCrsf');
 
-        let formDataSendToServer = new FormData();
+        let tokenCsrf = localStorage.getItem('tokenCsrf');
+        
+        let sendJson = {
+            "params":JSON.parse(json),
+            "wayToGo": url,
+            "token": tokenCsrf
+        }
+        // console.log(sendJson)
 
-        formDataSendToServer.append('params', json);
-        formDataSendToServer.append('pathToGo', url);
-        formDataSendToServer.append('tokenCrsf', tokenCrsf);
 
-
-        return this.httpClient.post(this.url, formDataSendToServer, {withCredentials: true});
+        return this.httpClient.post(this.url, sendJson, {withCredentials: true});
     }
 }

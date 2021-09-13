@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="userId">
+    <p>Votre Id : {{getIdUser()}}</p>
+  </div>
+  <div class="addFriend">
+    <label>Ajouter un ami a l'aide de l'id : </label><input type="text" [(ngModel)]="idFriend" >
+    <div class="button">
+      <button class="addFriendButton" (click)="verifyInputBeforeAddingFriend()"><p>Ajouter +</p></button>
+    </div>
+  </div>
+  
+</div>

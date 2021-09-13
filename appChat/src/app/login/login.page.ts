@@ -18,24 +18,30 @@ export class LoginPage implements OnInit {
   }
 
   login(form){
-    var formData = new FormData();
+    let jsonForm = {
+      "email" : form.value['email'],
+      "password" : form.value['password'],
+      "isLogin" : true,
+      "isLogout":false
+    }
 
-    formData.append('email', form.value['email']);
-    formData.append('password', form.value['password']);
+    console.log(jsonForm);
 
-    this.authService.login(formData)
+    this.authService.log(jsonForm)
     .subscribe(
       (data) => {
-        // console.log(data);
         if(data["isUserExist"]){
+          // this.userService.reset();
           //on store les infos de l'utilisateur pour les réutilisé en cas de rafraichissement de la page
-          sessionStorage.setItem("userData", JSON.stringify(data["userData"]));
-          sessionStorage.setItem("tokenCrsf", data["tokenCrsf"]);
-          sessionStorage.setItem("expirationTokenCrsf", data["expiresDate"]);
-          sessionStorage.setItem("creationToken", data["creationDate"]);
-
+          localStorage.setItem("userData", JSON.stringify(data["userData"]));
+          localStorage.setItem("tokenCsrf", data["tokenCsrf"]);
+          localStorage.setItem("expirationTokenCrsf", data["expiresDate"]);
+          localStorage.setItem("creationToken", data["creationDate"]);
+          
+          //mise a jour des infos user
           this.userService.majUser();
 
+          //redirection vers la page principal
           this.router.navigate(['/main-page']);          
         }else{
           this.invalidLogin = true;

@@ -10,6 +10,7 @@ import { AuthService } from './services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UserService } from './services/user.service';
 import { CommunicationService } from './services/communication.service';
+import { PageService } from './services/page.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { CommunicationService } from './services/communication.service';
     AuthService,
     UserService,
     CommunicationService,
+    PageService
   ],
   bootstrap: [AppComponent],
 })

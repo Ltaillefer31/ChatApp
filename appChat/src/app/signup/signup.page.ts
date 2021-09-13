@@ -16,7 +16,7 @@ export class SignupPage implements OnInit {
   ngOnInit() {
   }
 
-  async signup(form){
+  signup(form){
     var formData = new FormData();
 
     formData.append('nom', form.value['nom']);

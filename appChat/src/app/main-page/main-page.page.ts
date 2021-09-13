@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { PageService } from '../services/page.service';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -8,10 +10,29 @@ import { UserService } from '../services/user.service';
 })
 export class MainPagePage implements OnInit {
 
-  constructor() {
+  openAddFriendPage : boolean = false;
+  openAddFriendPageSubscription = new Subscription();
+
+  constructor(private pageService: PageService) {
   }
 
   ngOnInit() {
+    this.openAddFriendPageSubscription = this.pageService.openAddFriendPageSubject
+    .subscribe( 
+      (response : boolean) => {
+        this.openAddFriendPage = response;
+      }
+    );
+  }
+
+  getOpenAddFriendPageValue(){
+    return this.pageService.getOpenAddFriendPage();
+  }
+
+  goBack(){
+    if(this.openAddFriendPage){
+      this.pageService.setValueAddFriendPage(false);
+    }
   }
 
 }
