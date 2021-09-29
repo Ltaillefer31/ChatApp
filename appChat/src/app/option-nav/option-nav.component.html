@@ -9,6 +9,19 @@
       <ion-icon name="person-remove-outline"></ion-icon>
     </button>
   </div>
+  <div class="notifDiv">
+    <div class="numberOfNotif" *ngIf="numberOfNotifications > 0">
+      <div *ngIf="numberOfNotifications <= 9; else thenBlock">
+        <p>{{numberOfNotifications}}</p>
+      </div>
+      <ng-template #thenBlock><p>9+</p></ng-template>
+    </div>
+    <div class="notifications" (click)="setValueNotificationsPage()">
+      <button ion-button icon-only>
+        <ion-icon name="notifications-outline"></ion-icon>
+      </button>
+    </div>
+  </div> 
   <div class="parametre">
     <button ion-button icon-only (click)="test()" id="search-circle-outline">
       <ion-icon name="settings-outline"></ion-icon>

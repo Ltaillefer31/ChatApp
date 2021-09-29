@@ -57,6 +57,7 @@ export class MessageSpaceComponent implements OnInit {
         (reponse) => {
             this.userService.addMessage(this.message, this.userService.getUserId(),this.idFriend);
             this.message="";
+            this.userService.tellUserToRefreshFriend(this.idFriend);
         },
         (err) => {
             console.log("##ERROR envoi de message" + JSON.stringify(err));

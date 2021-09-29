@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Socket } from 'ngx-socket-io';
 import { Subscription } from 'rxjs';
 import { PageService } from '../services/page.service';
 import { UserService } from '../services/user.service';
@@ -12,6 +13,8 @@ export class MainPagePage implements OnInit {
 
   openAddFriendPage : boolean = false;
   openAddFriendPageSubscription = new Subscription();
+  openNotificationsPage : boolean = false;
+  openNotificationsPageSubscription = new Subscription();
 
   constructor(private pageService: PageService) {
   }
@@ -23,6 +26,13 @@ export class MainPagePage implements OnInit {
         this.openAddFriendPage = response;
       }
     );
+
+    this.openNotificationsPageSubscription = this.pageService.openNotificationsPageSubject
+    .subscribe( 
+      (response : boolean) => {
+        this.openNotificationsPage = response;
+      }
+    );
   }
 
   getOpenAddFriendPageValue(){
@@ -32,6 +42,8 @@ export class MainPagePage implements OnInit {
   goBack(){
     if(this.openAddFriendPage){
       this.pageService.setValueAddFriendPage(false);
+    }else if(this.openNotificationsPage){
+      this.pageService.setValueNotificationsPage(false);
     }
   }
 

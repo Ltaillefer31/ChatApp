@@ -1,6 +1,7 @@
 import { LEADING_TRIVIA_CHARS } from "@angular/compiler/src/render3/view/template";
 import { OnInit, Injectable, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
+import { Socket } from "ngx-socket-io";
 import { Observable, Subject, Subscription } from "rxjs";
 import { Message } from "../objects/message";
 import { User } from "../objects/user";
@@ -19,9 +20,12 @@ export class UserService implements OnInit{
     friendSubject = new Subject<User>();
     listMessageSubject = new Subject<Message[]>();
     listFriendSubject = new Subject<User[]>();
+    notifSubject = new Subject();
+
+    listNotifs = [];
 
 
-    constructor(private communicationService: CommunicationService, private authService: AuthService, private router: Router) {     
+    constructor(private communicationService: CommunicationService, private authService: AuthService, private router: Router, private socket:Socket) {     
         
     }
 
@@ -56,6 +60,11 @@ export class UserService implements OnInit{
         this.listFriendSubject.next(this.listFriends)
     }
 
+    emitNotifSubject(){
+        console.log("notif send")
+        this.notifSubject.next(this.listNotifs);
+    }
+
     setFriend(id, user : User){
         this.idFriend = id;
         this.refreshMessageList();
@@ -67,9 +76,23 @@ export class UserService implements OnInit{
         let userData = JSON.parse(localStorage.getItem("userData"));
         
         this.setUser(userData).then(() => {
-            this.emitUserSubject();
+            this.refreshFriendList();
+            this.refreshNotification();
+            this.socket.connect();
+            setTimeout(() => {
+                this.emitUserSubject();
+            }, 50);
         });
-        this.refreshFriendList();
+        
+        this.socket.on("channel"+this.user.getId(), (rep) => {
+            console.log("refresh friend");
+            this.refreshMessageList()
+        });
+
+        this.socket.on("channelNotif"+this.user.getId(), (rep)=>{
+            console.log("refresh Notif");
+            this.refreshNotification();
+        });
     }
 
     refreshFriendList(){ 
@@ -111,7 +134,6 @@ export class UserService implements OnInit{
         .subscribe(
             (response) => {
                 this.user.eraseMessage();
-                console.log("refresh message : " + JSON.stringify(response))
                 for(let i = 0; i < response["records"].length; i++){
                     this.user.addMessage(response["records"][i]["Message"],response["records"][i]["Sender"],response["records"][i]["Addressee"]);
                 }
@@ -123,26 +145,31 @@ export class UserService implements OnInit{
         );
     }
 
-    isUserConnected(){
-        let userConnected = false;
-        if(localStorage.getItem("expirationTokenCrsf")){
-            let expireToken = localStorage.getItem("expirationTokenCrsf");
-            let actualDate = Math.floor(Date.now() / 1000);
-            let userData = JSON.parse(localStorage.getItem("userData"));
-            console.log(userData);
+    refreshNotification(){
+        let url = "FriendRequest/getAllNotif.php";
 
-            if(typeof userData === "undefined"){
-                console.log("userData non existante");
-                userConnected = false;
-            }else if (Number(expireToken) < actualDate){
-                console.log("token CRSF expiré");
-                userConnected = false;   
-            }else{
-                userConnected = true;
-            }                
-        }
-        
-        return userConnected;
+        let jsonSend = {
+            "id" : this.user.getId()
+        };
+
+        let paramsJson = JSON.stringify(jsonSend);
+
+        this.communicationService.requestToServer(url, paramsJson)
+        .subscribe(
+            (response) => {
+                console.log("refresh Notif in refreshNotification()");
+                this.user.eraseNotification();
+                for(let i = 0; i < response["records"].length; i++){
+                    let friendUser = new User(response["records"][i]["nom"], response["records"][i]["prenom"], response["records"][i]["id"]);
+                    this.user.addNotification(friendUser, "friendInvit");
+                }
+                this.listNotifs = this.user.getNotification();
+                this.emitNotifSubject();
+            },
+            (err) => {
+                console.log("##ERROR Rafraichissement notifs " + JSON.stringify(err));
+            }
+        )
     }
 
     setUser(info){
@@ -177,12 +204,6 @@ export class UserService implements OnInit{
         
     }
 
-    getNumberOfMessage(): number{
-        let messageOfUserToFriend = this.user.getMessageById(this.idFriend);
-
-        return messageOfUserToFriend.length;
-    }
-
     sendMsg(text,idAddressee){
         let url = "MessageRequest/addMessage.php";
 
@@ -196,72 +217,31 @@ export class UserService implements OnInit{
 
 
         return this.communicationService.requestToServer(url, paramsJson);
-    }
-
-    getFriendById(id){
-        for(let friend of this.listFriends){
-            if(friend.getId() == id){
-                return friend;
-            }
-        }
-    }   
+    }  
 
     addMessage(text, idSender, idAddressee){
         this.user.addMessage(text, idSender, idAddressee);
         this.refreshMessageList();
     }
 
-    addMessageForTest(){
-        for(let userFriend of this.listFriends){
-            for(let i = 0; i < 5; i++){
-                setTimeout(() => {
-                    userFriend.addMessage("test"+userFriend.getId(), userFriend.getId(), this.user.getId());
-                }, 100);
-                setTimeout(() => {
-                    this.user.addMessage("test"+this.user.getId(), this.user.getId(), userFriend.getId());
-                }, 100); 
-            }            
-        }
-    }
-
-    addMessageForId(id){
-        let friend = this.getFriendById(id);
-
-        let friendId = friend.getId();
-        let userId = this.user.getId();
-
-        for(let i = 0; i < 4; i++){
-            setTimeout(() => {
-                friend.addMessage("test"+friendId, friendId, userId);
-            }, 100);
-            setTimeout(() => {
-                this.user.addMessage("test"+userId, userId, friendId);
-            }, 100);            
-        }            
-    }
-
     addFriend(idFriend){
-        let url = "FriendRequest/addFriend.php";
+        let url = "FriendRequest/askFriend.php";
 
-        let formData = new FormData();
+        let json = {
+            "id1": this.user.getId(),
+            "id2":idFriend
+        }
 
-        formData.append("id1", this.getUserId());
-        formData.append("id2", idFriend);
+        let jsonParams = JSON.stringify(json);
 
-        var object = {};
-        formData.forEach(function(value, key){
-            object[key] = value;
-        });
-        
-        let paramsJson = JSON.stringify(object);
-
-        this.communicationService.requestToServer(url, paramsJson)
+        this.communicationService.requestToServer(url, jsonParams)
         .subscribe(
             (reponse) => {
-                if(reponse["validOperation"]){
-                    this.listFriends.push(new User("test2","test2",5));
-                }
+                // if(reponse["validOperation"]){
+                //     this.listFriends.push(new User("test2","test2",5));
+                // }
                 console.log(reponse);
+                this.tellUserToRefreshNotif(idFriend);
             },
             (err) => {
                 console.log("##ERROR envoi de message" + JSON.stringify(err));
@@ -269,34 +249,13 @@ export class UserService implements OnInit{
         );        
     }
 
-    checkForUpdate(){
-        let url = "MessageRequest/compareNumberOfMessage.php";
+    tellUserToRefreshFriend(idFriend){
+        this.socket.emit("refreshMessageForId",idFriend);
+    }
 
-        let formData = new FormData();
-
-        formData.append("id1", this.user.getId());
-        formData.append("id2", String(this.idFriend));
-        formData.append("numberOfMessage", String(this.getNumberOfMessage()));
-
-        var object = {};
-        formData.forEach(function(value, key){
-            object[key] = value;
-        });
-        
-        let paramsJson = JSON.stringify(object);
-
-
-        this.communicationService.requestToServer(url,paramsJson)
-        .subscribe(
-            (response) => {
-                if(response["sameAmount"] == false){
-                    this.refreshMessageList();
-                }
-            },
-            (err) => {
-                console.log("##ERROR " + JSON.stringify(err));
-            }
-        );
+    tellUserToRefreshNotif(idFriend){
+        console.log("test refresh notif");
+        this.socket.emit("refreshNotificationForId", idFriend);
     }
 
     disconnect(){
@@ -310,11 +269,16 @@ export class UserService implements OnInit{
             (response) => {
                 console.log(response["message"]);
                 this.reset();
+                this.socket.disconnect();
                 this.router.navigate(['/login']);
             },
             (err) => {
                 console.log("##ERROR not disconnect : " + JSON.stringify(err));
             }
         )
+    }
+
+    getNotif(){
+        return this.listNotifs;
     }
 }

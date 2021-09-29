@@ -1,5 +1,5 @@
-import { connectableObservableDescriptor } from "rxjs/internal/observable/ConnectableObservable";
 import { Message } from "./message";
+import {Notification } from "./notification";
 
 export class User {
 
@@ -8,6 +8,7 @@ export class User {
     id:string;
     status:string;
     messages:Message[] = new Array<Message>();
+    notifications:Notification[] = new Array<Notification>();
 
 
     constructor(nom,prenom,id){
@@ -54,4 +55,18 @@ export class User {
         }
         return arrReturnedMessage; 
     }
+
+    addNotification(user, typeNotif){
+        this.notifications.push(new Notification(user, typeNotif));
+    }
+
+    eraseNotification(){
+        this.notifications = new Array<Notification>();
+    }
+
+    getNotification(){
+        return this.notifications;
+    }
+
+
 }

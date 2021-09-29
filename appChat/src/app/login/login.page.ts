@@ -25,8 +25,6 @@ export class LoginPage implements OnInit {
       "isLogout":false
     }
 
-    console.log(jsonForm);
-
     this.authService.log(jsonForm)
     .subscribe(
       (data) => {

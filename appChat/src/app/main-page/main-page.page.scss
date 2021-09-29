@@ -84,3 +84,15 @@
     // justify-self: center;
 }
 
+.modalNotificationPage{
+    height:600px;
+    width:400px;
+    margin-top: 150px;
+    z-index:1;
+    // box-shadow : 10px 5px 5px grey;
+    opacity: 1 !important;
+    // background-color:red;
+    grid-column-start: 1;
+    grid-row-start: 3;
+}
+

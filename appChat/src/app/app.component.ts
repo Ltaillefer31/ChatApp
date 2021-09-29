@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Socket } from 'ngx-socket-io';
 import { UserService } from './services/user.service';
 
 @Component({
@@ -8,7 +9,7 @@ import { UserService } from './services/user.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor(private userService: UserService, private router: Router) {
+  constructor(private userService: UserService, private socket:Socket) {
     // this.userService.disconnect();
     //pass
     //  let userConnected = this.userService.isUserConnected();

@@ -1,7 +1,7 @@
 <ion-content>
   <div class="container">
     <div class="clickCloseDiv" (click)="goBack()"
-    [ngClass]="{'goForward': openAddFriendPage == true}"></div>
+    [ngClass]="{'goForward': openAddFriendPage == true || openNotificationsPage == true }"></div>
 
     <div class="infoUser">
       <!-- Composant infoUser -->
@@ -32,6 +32,8 @@
     </div>
 
     <app-add-friend class="modalPageAddFriend" *ngIf="openAddFriendPage"></app-add-friend>
+    <!-- Ici ajouter la notifPage -->
+    <app-notification-page class="modalNotificationPage" *ngIf="openNotificationsPage"></app-notification-page>
   </div>
 
 

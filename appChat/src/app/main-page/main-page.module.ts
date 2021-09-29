@@ -14,6 +14,7 @@ import { MessageSpaceModule } from '../message-space/message-space.module';
 import { InfoFriendModule } from '../info-friend/info-friend.module';
 import { OptionNavModule } from '../option-nav/option-nav.module';
 import { AddFriendModule } from '../add-friend/add-friend.module';
+import { NotificationPageModule } from '../notification-page/notification-page.module';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { AddFriendModule } from '../add-friend/add-friend.module';
     MessageSpaceModule,
     InfoFriendModule, 
     OptionNavModule,
-    AddFriendModule    
+    AddFriendModule,
+    NotificationPageModule    
   ],
   declarations: [MainPagePage]
 })

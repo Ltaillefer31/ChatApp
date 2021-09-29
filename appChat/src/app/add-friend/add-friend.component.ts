@@ -15,11 +15,10 @@ export class AddFriendComponent implements OnInit {
 
   ngOnInit() {}
 
-  getIdUser() { return this.userService.getUserId()}
+  getIdUser() { return this.userService.getUserId() }
 
   verifyInputBeforeAddingFriend(){
     if(this.idFriend != "" && Number(this.idFriend)){
-      console.log("yes");
       this.addFriend();
     }else{
       console.log("nop"); 

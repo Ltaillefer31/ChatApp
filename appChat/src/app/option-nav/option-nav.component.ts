@@ -9,9 +9,12 @@ import { UserService } from '../services/user.service';
 })
 export class OptionNavComponent implements OnInit {
 
+  numberOfNotifications: number = 18;
+
   constructor(private pageService: PageService, private userService: UserService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   test(){
     console.log("working");
@@ -19,6 +22,10 @@ export class OptionNavComponent implements OnInit {
 
   setValueAddFriendPage(){
     this.pageService.setValueAddFriendPage(true);
+  }
+
+  setValueNotificationsPage(){
+    this.pageService.setValueNotificationsPage(true);
   }
 
   disconnect(){
