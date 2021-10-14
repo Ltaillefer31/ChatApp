@@ -29,4 +29,10 @@ export class AuthService{
 
         return this.httpClient.post(urlApi,{withCredentials:true});
     }
+
+    verifyIfUserIsAuthenticated(form){
+        let url = this.HOSTNAME2.concat("verifyIfUserConnected");
+
+        return this.httpClient.post(url,form,{withCredentials:true});
+    }
 }

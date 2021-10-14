@@ -1,8 +1,7 @@
-import { LEADING_TRIVIA_CHARS } from "@angular/compiler/src/render3/view/template";
 import { OnInit, Injectable, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 import { Socket } from "ngx-socket-io";
-import { Observable, Subject, Subscription } from "rxjs";
+import { Subject } from "rxjs";
 import { Message } from "../objects/message";
 import { User } from "../objects/user";
 import { AuthService } from "./auth.service";
@@ -21,6 +20,7 @@ export class UserService implements OnInit{
     listMessageSubject = new Subject<Message[]>();
     listFriendSubject = new Subject<User[]>();
     notifSubject = new Subject();
+    numberNotifSubject = new Subject<number>();
 
     listNotifs = [];
 
@@ -65,6 +65,10 @@ export class UserService implements OnInit{
         this.notifSubject.next(this.listNotifs);
     }
 
+    emitNumberNotifSuject(){
+        this.numberNotifSubject.next(this.listNotifs.length);
+    }
+
     setFriend(id, user : User){
         this.idFriend = id;
         this.refreshMessageList();
@@ -76,8 +80,11 @@ export class UserService implements OnInit{
         let userData = JSON.parse(localStorage.getItem("userData"));
         
         this.setUser(userData).then(() => {
+            console.log("user Set");
             this.refreshFriendList();
-            this.refreshNotification();
+            setTimeout(() => {
+                this.refreshNotification();  
+            },50);
             this.socket.connect();
             setTimeout(() => {
                 this.emitUserSubject();
@@ -86,7 +93,8 @@ export class UserService implements OnInit{
         
         this.socket.on("channel"+this.user.getId(), (rep) => {
             console.log("refresh friend");
-            this.refreshMessageList()
+            this.refreshMessageList();
+            this.refreshFriendList();
         });
 
         this.socket.on("channelNotif"+this.user.getId(), (rep)=>{
@@ -108,7 +116,7 @@ export class UserService implements OnInit{
         .subscribe(
             (response) => {
                 console.log(response)
-                // this.listFriends = new Array<User>();
+                this.listFriends = new Array<User>();
                 for(let i = 0; i < response["records"].length; i++){
                     this.listFriends.push(new User(response["records"][i]["nom"], response["records"][i]["prenom"], response["records"][i]["id"]));
                 }
@@ -165,6 +173,7 @@ export class UserService implements OnInit{
                 }
                 this.listNotifs = this.user.getNotification();
                 this.emitNotifSubject();
+                this.emitNumberNotifSuject();
             },
             (err) => {
                 console.log("##ERROR Rafraichissement notifs " + JSON.stringify(err));
@@ -174,6 +183,7 @@ export class UserService implements OnInit{
 
     setUser(info){
         return new Promise((resolve, reject) => {
+            console.log("user getting set");
             this.user = new User(info["nom"], info["prenom"], info["id"]);
             resolve("done")
         })
@@ -274,6 +284,54 @@ export class UserService implements OnInit{
             },
             (err) => {
                 console.log("##ERROR not disconnect : " + JSON.stringify(err));
+            }
+        )
+    }
+
+    acceptFriend(idFriend){
+        let url = "FriendRequest/acceptFriend.php"; 
+
+        let json={
+            "id1":this.user.getId(),
+            "id2":idFriend,
+            "answer":true
+        };
+
+        let jsonParams = JSON.stringify(json);
+
+        this.communicationService.requestToServer(url, jsonParams)
+        .subscribe(
+            (response) => {
+                console.log(response);
+                this.refreshFriendList();
+                this.refreshNotification();
+                this.tellUserToRefreshFriend(idFriend);
+            },
+            (err) => {
+                console.log("##ERROR acceptFriend " + JSON.stringify(err))
+            }
+        )
+    }
+
+    refuseFriend(idFriend){
+        let url = "FriendRequest/acceptFriend.php"; 
+
+        let json={
+            "id1":this.user.getId(),
+            "id2":idFriend,
+            "answer":false
+        };
+
+        let jsonParams = JSON.stringify(json);
+
+        this.communicationService.requestToServer(url, jsonParams)
+        .subscribe(
+            (response) => {
+                console.log(response);
+                this.refreshNotification();
+            },
+            (err) => {
+                console.log("##ERROR refuse Friend " + JSON.stringify(err))
             }
         )
     }

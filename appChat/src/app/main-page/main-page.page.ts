@@ -15,6 +15,7 @@ export class MainPagePage implements OnInit {
   openAddFriendPageSubscription = new Subscription();
   openNotificationsPage : boolean = false;
   openNotificationsPageSubscription = new Subscription();
+  messageSpaceOpen : boolean = false;
 
   constructor(private pageService: PageService) {
   }
@@ -33,6 +34,8 @@ export class MainPagePage implements OnInit {
         this.openNotificationsPage = response;
       }
     );
+
+
   }
 
   getOpenAddFriendPageValue(){
@@ -45,6 +48,10 @@ export class MainPagePage implements OnInit {
     }else if(this.openNotificationsPage){
       this.pageService.setValueNotificationsPage(false);
     }
+  }
+  
+  openContact(){
+    this.messageSpaceOpen = !this.messageSpaceOpen;
   }
 
 }

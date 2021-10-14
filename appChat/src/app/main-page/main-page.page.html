@@ -3,31 +3,38 @@
     <div class="clickCloseDiv" (click)="goBack()"
     [ngClass]="{'goForward': openAddFriendPage == true || openNotificationsPage == true }"></div>
 
-    <div class="infoUser">
+    <div class="infoUser" 
+    [ngClass]="{'hide' : messageSpaceOpen == true}">
       <!-- Composant infoUser -->
       <app-info-user></app-info-user>
     </div>
 
-    <div class="recherche">
+    <div class="recherche"
+    [ngClass]="{'hide' : messageSpaceOpen == true}">
       <!-- Composant Finder-->
       <app-finder></app-finder>
     </div>
-    <div class="listContact">
+    <div class="listContact" (click)="openContact()"
+    [ngClass]="{'hide' : messageSpaceOpen == true}">
       <!-- ICI METTRE LISTE DES CONTACTS  -->
       <!-- Composant listContact  -->
       <app-list-contact></app-list-contact>
 
     </div>
 
-    <div class="infoFriend">
+    <div class="infoFriend"
+    [ngClass]="{'hide' : messageSpaceOpen == false}">
       <!-- Composant infoFriend-->
+      <ion-icon name="chevron-back-outline" class="chevronBackward" (click)="openContact()"></ion-icon>
       <app-info-friend></app-info-friend>
     </div>
-    <div class="MessageSpace">
+    <div class="MessageSpace"
+    [ngClass]="{'hide' : messageSpaceOpen == false}">
       <!--Composant Message Space -->
       <app-message-space></app-message-space>
     </div>
-    <div class="optionNav">
+    <div class="optionNav"
+    [ngClass]="{'hide' : messageSpaceOpen == true}">
       <app-option-nav></app-option-nav>
     </div>
 

@@ -20,7 +20,6 @@ export class NotificationPageComponent implements OnInit {
     .subscribe(
       (notifTab: Notification[]) => {
         this.notifAskFriend = notifTab;
-        console.log(notifTab);
       },
       (err) => {
         console.log("error receive notif");
@@ -30,12 +29,14 @@ export class NotificationPageComponent implements OnInit {
 
   ngOnInit() {}
 
-  accept(){
-    console.log("accept")
+  accept(notif){
+    console.log(notif)
+    this.userService.acceptFriend(notif.getUserId());
   }
 
-  refuse(){
-    console.log("refuse");
+  refuse(notif){
+    console.log(notif);
+    this.userService.refuseFriend(notif.getUserId());
   }
 
 }

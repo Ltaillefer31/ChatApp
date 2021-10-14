@@ -37,6 +37,9 @@
     // background-color:pink;
     position: relative;
     left:5px;
+    display:flex;
+    flex-direction:row;
+    justify-content: flex-start;
 }
 .MessageSpace{
     grid-column-start :2;
@@ -94,5 +97,51 @@
     // background-color:red;
     grid-column-start: 1;
     grid-row-start: 3;
+}
+
+.chevronBackward{
+    display:none;
+}
+
+@media screen and (max-width:650px){
+    .container{
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height:100%;
+        display:grid;
+        grid-template-columns:1fr;
+        grid-template-rows: 75px 50px 1fr 30px;
+        overflow:hidden;
+    }
+
+    .MessageSpace{
+        grid-column-start :1;
+        grid-row: 2 / 5;
+        // background-color:grey;
+        position:relative;
+        top:10px;
+        left:5px;
+        padding-bottom: 5px;
+        z-index:20;
+    }
+
+    .infoFriend{
+        grid-column-start :1;
+        grid-row-start: 1;
+        // background-color:pink;
+        position: relative;
+        left:5px;
+    }
+
+    .chevronBackward{
+        display:block;
+        font-size:24px;
+    }
+
+    .hide{
+        display:none;
+    }
+
 }
 

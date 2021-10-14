@@ -17,5 +17,9 @@ export class Notification{
         return this.user.getPrenom();
     }
 
+    getUserId(){
+        return this.user.getId();
+    }
+
 
 }

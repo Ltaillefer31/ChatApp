@@ -4,10 +4,10 @@
           <div class="infoUser"><label>{{notif.getUserPrenom()}} {{notif.getUserNom()}}</label></div>
           <div class="answerDiv">
               <div class="accept">
-                  <button class="acceptButton" (click)="accept()"><label>Accepter</label></button>
+                  <button class="acceptButton" (click)="accept(notif)"><label>Accepter</label></button>
               </div>
               <div class="refuse">
-                  <button class="refuseButton" (click)="refuse()"><label>Refuser</label></button>
+                  <button class="refuseButton" (click)="refuse(notif)"><label>Refuser</label></button>
               </div>
           </div>
       </div>
